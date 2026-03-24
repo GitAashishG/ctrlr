@@ -73,11 +73,15 @@ fn build_prompt(query: &str, os: &str, shell: &str) -> String {
 }
 
 fn call_llm(query: &str) -> Result<String, String> {
-    let api_key = env::var("OPENAI_API_KEY")
-        .map_err(|_| "OPENAI_API_KEY not set. Export it first:\n  export OPENAI_API_KEY=sk-...")?;
+    let api_key = env::var("OPENAI_API_KEY").ok();
 
     let base_url = env::var("OPENAI_BASE_URL")
         .unwrap_or_else(|_| "https://api.openai.com/v1".to_string());
+
+    // Require a key when using the default OpenAI endpoint
+    if api_key.is_none() && !base_url.contains("127.0.0.1") && !base_url.contains("localhost") {
+        return Err("OPENAI_API_KEY not set. Export it first:\n  export OPENAI_API_KEY=sk-...\n  (not required for local models)".into());
+    }
 
     let model = env::var("CTRLR_MODEL")
         .unwrap_or_else(|_| "gpt-4o-mini".to_string());
@@ -106,10 +110,15 @@ fn call_llm(query: &str) -> Result<String, String> {
 
     let body_json = serde_json::to_string(&request_body).unwrap();
 
-    let resp = minreq::post(&url)
-        .with_header("Authorization", format!("Bearer {}", api_key))
+    let mut req = minreq::post(&url)
         .with_header("Content-Type", "application/json")
-        .with_body(body_json)
+        .with_body(body_json);
+
+    if let Some(key) = &api_key {
+        req = req.with_header("Authorization", format!("Bearer {}", key));
+    }
+
+    let resp = req
         .send()
         .map_err(|e| format!("API request failed: {}", e))?;
 
