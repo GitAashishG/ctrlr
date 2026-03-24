@@ -135,8 +135,30 @@ fn call_llm(query: &str) -> Result<String, String> {
 
     body.choices
         .first()
-        .map(|c| c.message.content.trim().to_string())
-        .ok_or_else(|| "No response from API".into())
+        .map(|c| strip_markdown(&c.message.content))
+        .filter(|c| !c.is_empty())
+        .ok_or_else(|| "Model returned an empty command".into())
+}
+
+/// Strip markdown code fences that local models love to wrap commands in
+fn strip_markdown(s: &str) -> String {
+    let s = s.trim();
+    // Handle ```bash\n...\n``` or ```\n...\n```
+    if s.starts_with("```") && s.ends_with("```") {
+        let inner = &s[3..s.len() - 3];
+        // Skip the language tag on the first line (e.g. "bash", "sh", "zsh")
+        let inner = if let Some(newline_pos) = inner.find('\n') {
+            &inner[newline_pos + 1..]
+        } else {
+            inner
+        };
+        return inner.trim().to_string();
+    }
+    // Handle single backtick wrapping: `command`
+    if s.starts_with('`') && s.ends_with('`') && !s.contains('\n') {
+        return s[1..s.len() - 1].trim().to_string();
+    }
+    s.to_string()
 }
 
 fn run_command(cmd: &str) {
