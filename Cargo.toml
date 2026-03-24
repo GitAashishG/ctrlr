@@ -1,0 +1,18 @@
+[package]
+name = "ctrlr"
+version = "0.1.0"
+edition = "2021"
+description = "Natural language to terminal commands"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+minreq = { version = "=2.11.0", features = ["https"] }
+
+[profile.release]
+strip = true
+lto = true
+
+[[bin]]
+name = "nl"
+path = "src/main.rs"
