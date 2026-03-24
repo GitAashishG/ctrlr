@@ -3,7 +3,7 @@
 Natural language → terminal commands. Type what you want, get the command, run it.
 
 ```
-$ nl list files in descending order of size
+$ nli list files in descending order of size
 
   ❯ find . -maxdepth 1 -type f -printf '%s\t%p\n' | sort -nr
 
@@ -22,7 +22,7 @@ cd ctrlr
 cargo build --release
 
 # Add to PATH (pick one)
-sudo cp target/release/nl /usr/local/bin/
+sudo cp target/release/nli /usr/local/bin/
 # or
 echo 'export PATH="$PATH:/path/to/ctrlr/target/release"' >> ~/.bashrc
 ```
@@ -47,7 +47,7 @@ Add these to your `~/.bashrc` or `~/.zshrc` to persist.
 ## Usage
 
 ```bash
-nl <what you want to do in plain english>
+nli <what you want to do in plain english>
 ```
 
 The tool will:
@@ -58,11 +58,11 @@ The tool will:
 ### Examples
 
 ```bash
-nl find all python files modified in the last week
-nl compress this folder into a tar.gz
-nl show disk usage sorted by size
-nl kill the process running on port 3000
-nl create a git branch called feature/auth
+nli find all python files modified in the last week
+nli compress this folder into a tar.gz
+nli show disk usage sorted by size
+nli kill the process running on port 3000
+nli create a git branch called feature/auth
 ```
 
 ## How it works

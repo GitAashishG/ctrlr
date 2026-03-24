@@ -152,8 +152,8 @@ fn main() {
     let args: Vec<String> = env::args().skip(1).collect();
 
     if args.is_empty() {
-        eprintln!("Usage: nl <natural language command>");
-        eprintln!("  e.g: nl list files in descending order of size");
+        eprintln!("Usage: nli <natural language command>");
+        eprintln!("  e.g: nli list files in descending order of size");
         std::process::exit(1);
     }
 

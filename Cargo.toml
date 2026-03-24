@@ -14,5 +14,5 @@ strip = true
 lto = true
 
 [[bin]]
-name = "nl"
+name = "nli"
 path = "src/main.rs"
